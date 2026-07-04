@@ -1,0 +1,1776 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>📚 AI 学习助手</title>
+    <style>
+        /* ===== 全局样式 ===== */
+        :root {
+            --primary: #07C160;
+            --primary-dark: #06ad56;
+            --primary-light: #e8f5ee;
+            --bg: #f0f2f5;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: #1a1a2e;
+            padding-bottom: 80px;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(7, 193, 96, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(7, 193, 96, 0.05) 0%, transparent 50%);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 8px;
+        }
+
+        /* ===== 登录/注册界面 ===== */
+        .auth-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: var(--bg);
+        }
+        .auth-box {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: var(--shadow);
+        }
+        .auth-box .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .auth-box .sub-logo {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .auth-box .form-group {
+            margin-bottom: 16px;
+        }
+        .auth-box .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .auth-box .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 14px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            background: #fafbfc;
+        }
+        .auth-box .form-group input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(7, 193, 96, 0.1);
+        }
+        .auth-box .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(7, 193, 96, 0.3);
+        }
+        .auth-box .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(7, 193, 96, 0.4);
+        }
+        .auth-box .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .auth-box .switch-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #888;
+        }
+        .auth-box .switch-link a {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .auth-box .error-text {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .main-page {
+            display: none;
+        }
+
+        /* ===== 顶部导航（登录后显示） ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            padding: 14px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+        .header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .brand .logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
+        }
+        .header .brand h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .header .brand .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-left: 6px;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+        .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #555;
+        }
+        .header .user-info .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #07C160, #06ad56);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .header .user-info .logout-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: var(--transition);
+        }
+        .header .user-info .logout-btn:hover {
+            background: #f0f2f5;
+            color: #e74c3c;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 16px 20px;
+        }
+
+        /* ===== 卡片样式 ===== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--radius);
+            padding: 20px 18px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: var(--transition);
+        }
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+        }
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1a1a2e;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .option {
+            padding: 6px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 30px;
+            background: #fafbfc;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .option:hover {
+            border-color: #b0d4c0;
+            background: #f5faf8;
+        }
+        .option.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(7, 193, 96, 0.25);
+        }
+        select,
+        textarea,
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ecf1;
+            border-radius: 14px;
+            font-size: 14px;
+            background: #fafbfc;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        select:focus,
+        textarea:focus,
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(7, 193, 96, 0.08);
+        }
+        textarea {
+            height: 90px;
+            resize: vertical;
+        }
+        .kb-textarea {
+            height: 140px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            position: relative;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(7, 193, 96, 0.3);
+            transition: var(--transition);
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(7, 193, 96, 0.4);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-sm {
+            width: auto;
+            padding: 8px 24px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .result-box {
+            margin-top: 16px;
+            padding: 16px 18px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border-left: 4px solid var(--primary);
+            display: none;
+            animation: fadeSlideUp 0.4s ease;
+        }
+        .result-box.show {
+            display: block;
+        }
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .result-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a1a2e;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .result-content {
+            font-size: 14px;
+            line-height: 1.9;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 12px;
+            padding: 2px 14px;
+            border-radius: 20px;
+            margin-right: 6px;
+            background: #e8ecf1;
+            color: #666;
+            font-weight: 500;
+        }
+        .tag.green {
+            background: #d4f0e0;
+            color: #07C160;
+        }
+        .tag.orange {
+            background: #fde8d0;
+            color: #e8850c;
+        }
+        .tag.blue {
+            background: #d4e8f5;
+            color: #1a7fc4;
+        }
+        .tag.purple {
+            background: #e0d4f5;
+            color: #6a3fa0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            justify-content: space-around;
+            padding: 6px 0 env(safe-area-inset-bottom);
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.04);
+            z-index: 100;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .bottom-nav .nav-item {
+            text-align: center;
+            padding: 6px 0;
+            flex: 1;
+            cursor: pointer;
+            color: #999;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .bottom-nav .nav-item i {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 2px;
+            transition: var(--transition);
+        }
+        .bottom-nav .nav-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .bottom-nav .nav-item.active i {
+            transform: translateY(-2px);
+        }
+        .bottom-nav .nav-item:hover {
+            color: var(--primary);
+        }
+
+        .tab-page {
+            display: none;
+            animation: fadeSlideUp 0.3s ease;
+        }
+        .tab-page.active {
+            display: block;
+        }
+
+        .kb-status {
+            padding: 10px 14px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            font-size: 13px;
+            color: #1a6a3e;
+            margin-top: 8px;
+            display: none;
+            border: 1px solid rgba(7, 193, 96, 0.15);
+        }
+        .kb-status.show {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stats-grid .stat-item {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .stats-grid .stat-item .num {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+        .stats-grid .stat-item .label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        .history-list .item {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-list .item .time {
+            color: #aaa;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        .task-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .task-item .task-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        .task-item .task-text.done {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 320px;
+        }
+        .toast {
+            padding: 12px 18px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #fff;
+            border-radius: 14px;
+            font-size: 14px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .toast.success {
+            border-left: 4px solid var(--primary);
+        }
+        .toast.error {
+            border-left: 4px solid #e74c3c;
+        }
+        .toast.warning {
+            border-left: 4px solid #f39c12;
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .toast.hide {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+        @keyframes slideOutRight {
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: var(--radius);
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            padding: 28px 24px;
+            overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s ease;
+        }
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .modal-box .close-modal {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-box .close-modal:hover {
+            color: #333;
+        }
+        .modal-box .protocol-content {
+            font-size: 14px;
+            line-height: 1.9;
+            color: #555;
+            margin: 16px 0;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .header,
+            .bottom-nav,
+            .btn,
+            .no-print {
+                display: none !important;
+            }
+            .container {
+                max-width: 100%;
+                padding: 20px;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+            .result-box {
+                border-left-color: #000;
+            }
+            .tab-page {
+                display: block !important;
+            }
+            .tab-page:not(.active) {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header .brand h1 {
+                font-size: 16px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .stats-grid .stat-item .num {
+                font-size: 22px;
+            }
+            .toast-container {
+                left: 20px;
+                right: 20px;
+                bottom: 80px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 登录/注册界面 ===== -->
+    <div id="authPage" class="auth-page">
+        <div class="auth-box">
+            <div class="logo">📚 AI 学习助手</div>
+            <div class="sub-logo">登录以使用全部功能</div>
+            <form id="loginForm">
+                <div class="form-group"><label>用户名</label><input type="text" id="loginUsername" placeholder="请输入用户名" required /></div>
+                <div class="form-group"><label>密码</label><input type="password" id="loginPassword" placeholder="请输入密码" required /></div>
+                <div class="error-text" id="loginError"></div>
+                <button type="submit" class="btn-primary">登 录</button>
+                <div class="switch-link">还没有账号？ <a id="gotoRegister">立即注册</a></div>
+            </form>
+            <form id="registerForm" style="display:none;">
+                <div class="form-group"><label>用户名</label><input type="text" id="regUsername" placeholder="请设置用户名" required /></div>
+                <div class="form-group"><label>密码</label><input type="password" id="regPassword" placeholder="至少6位" required /></div>
+                <div class="form-group"><label>确认密码</label><input type="password" id="regPassword2" placeholder="再次输入密码" required /></div>
+                <div class="error-text" id="regError"></div>
+                <button type="submit" class="btn-primary">注 册</button>
+                <div class="switch-link">已有账号？ <a id="gotoLogin">去登录</a></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== 顶部导航 ===== -->
+    <header class="header" id="appHeader">
+        <div class="brand"><div class="logo">📚</div><h1>AI 学习助手 <span class="status-dot"></span></h1></div>
+        <div class="user-info" id="userInfoArea">
+            <span id="usernameDisplay">用户</span>
+            <div class="avatar" id="avatarDisplay">U</div>
+            <button class="logout-btn" id="logoutBtn">退出</button>
+        </div>
+    </header>
+
+    <!-- ===== 主界面 ===== -->
+    <div id="mainPage" class="main-page">
+        <div class="container">
+
+            <!-- 知识库 -->
+            <div class="card" style="border:2px solid rgba(7,193,96,0.2);background:rgba(7,193,96,0.02);">
+                <div class="card-title"><i>📚</i> 自定义知识库 <span class="tag purple">核心</span></div>
+                <div class="form-group">
+                    <label>粘贴你的学习资料（如教材目录）</label>
+                    <textarea class="kb-textarea" id="knowledgeBase" placeholder="粘贴你的知识点...">九年级上册数学（人教版）：
+第二十一章 一元二次方程
+第二十二章 二次函数
+第二十三章 旋转
+第二十四章 圆
+第二十五章 概率初步</textarea>
+                </div>
+                <button class="btn btn-sm" id="applyKbBtn" style="background:var(--primary);width:auto;padding:8px 24px;">✅ 应用知识库</button>
+                <div class="kb-status" id="kbStatus">✅ 知识库已加载</div>
+            </div>
+
+            <!-- ===== 选项卡 ===== -->
+
+            <!-- 1. 计划 -->
+            <div class="tab-page active" id="tabPlan">
+                <div class="card">
+                    <div class="card-title"><i>📅</i> 智能学习计划 <span class="tag green">含打卡</span></div>
+                    <div class="form-group">
+                        <label>学段</label>
+                        <div class="option-group" id="stageGroupPlan" data-stage-group>
+                            <span class="option" data-value="小学">小学</span>
+                            <span class="option active" data-value="初中">初中</span>
+                            <span class="option" data-value="高中">高中</span>
+                            <span class="option" data-value="大学">大学</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>年级</label>
+                        <select id="gradeSelectPlan" class="grade-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>学科</label>
+                        <select id="planSubject" class="subject-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>教科书版本</label>
+                        <select id="planEdition">
+                            <option value="人教版">人教版</option>
+                            <option value="北师大版">北师大版</option>
+                            <option value="苏教版">苏教版</option>
+                            <option value="沪教版">沪教版</option>
+                            <option value="鲁教版">鲁教版</option>
+                            <option value="其他">其他（下方注明）</option>
+                        </select>
+                        <input type="text" id="planEditionOther" placeholder="如：华师大版" style="margin-top:6px;" />
+                    </div>
+                    <div class="form-group">
+                        <label>学习范围（如：前三章）</label>
+                        <input type="text" id="planScope" value="前三章" placeholder="例如：前三章" />
+                    </div>
+                    <div class="form-group">
+                        <label>额外要求（可选）</label>
+                        <textarea id="planExtra" placeholder="例如：每天加练5道计算题"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>计划天数</label>
+                        <div class="option-group" id="daysGroup">
+                            <span class="option" data-value="5">5天</span>
+                            <span class="option active" data-value="7">7天</span>
+                            <span class="option" data-value="14">14天</span>
+                            <span class="option" data-value="21">21天</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>学习强度</label>
+                        <div class="option-group" id="intensityGroup">
+                            <span class="option" data-value="轻松">😊 轻松</span>
+                            <span class="option active" data-value="适中">⚖️ 适中</span>
+                            <span class="option" data-value="强化">💪 强化</span>
+                        </div>
+                    </div>
+                    <button class="btn" id="genPlanBtn">🚀 生成计划（含打卡）</button>
+                    <div class="result-box" id="planResult">
+                        <span class="result-title">📋 你的每日计划</span>
+                        <div class="result-content" id="planContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 检测 -->
+            <div class="tab-page" id="tabDetect">
+                <div class="card">
+                    <div class="card-title"><i>🧠</i> 背诵检测</div>
+                    <div class="form-group">
+                        <label>学段</label>
+                        <div class="option-group" id="stageGroupDetect" data-stage-group>
+                            <span class="option" data-value="小学">小学</span>
+                            <span class="option active" data-value="初中">初中</span>
+                            <span class="option" data-value="高中">高中</span>
+                            <span class="option" data-value="大学">大学</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>年级</label>
+                        <select id="gradeSelectDetect" class="grade-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>检测范围（可选）</label>
+                        <input type="text" id="detectScope" placeholder="如：第二单元" />
+                    </div>
+                    <div class="form-group">
+                        <label>额外输入（可选）</label>
+                        <textarea id="reciteInput" placeholder="如需检测特定内容，可输入"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>题型</label>
+                        <div class="option-group" id="detectTypeGroup">
+                            <span class="option active" data-value="fill">填空题</span>
+                            <span class="option" data-value="choice">选择题</span>
+                            <span class="option" data-value="judge">判断题</span>
+                        </div>
+                    </div>
+                    <button class="btn" id="detectBtn">🔍 开始检测</button>
+                    <div class="result-box" id="detectResult">
+                        <span class="result-title">✅ 检测题目</span>
+                        <div class="result-content" id="detectContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 试卷 -->
+            <div class="tab-page" id="tabPaper">
+                <div class="card">
+                    <div class="card-title"><i>📝</i> 生成试卷 <span class="tag orange">可导出PDF/Word</span></div>
+                    <div class="form-group">
+                        <label>学段</label>
+                        <div class="option-group" id="stageGroupPaper" data-stage-group>
+                            <span class="option" data-value="小学">小学</span>
+                            <span class="option active" data-value="初中">初中</span>
+                            <span class="option" data-value="高中">高中</span>
+                            <span class="option" data-value="大学">大学</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>年级</label>
+                        <select id="gradeSelectPaper" class="grade-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>学科</label>
+                        <select id="paperSubject" class="subject-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>教科书版本</label>
+                        <select id="paperEdition">
+                            <option value="人教版">人教版</option>
+                            <option value="北师大版">北师大版</option>
+                            <option value="苏教版">苏教版</option>
+                            <option value="沪教版">沪教版</option>
+                            <option value="鲁教版">鲁教版</option>
+                            <option value="其他">其他（下方注明）</option>
+                        </select>
+                        <input type="text" id="paperEditionOther" placeholder="如：华师大版" style="margin-top:6px;" />
+                    </div>
+                    <div class="form-group">
+                        <label>考试范围（如：前三章）</label>
+                        <input type="text" id="paperScope" value="前三章" placeholder="如：前三章" />
+                    </div>
+                    <div class="form-group">
+                        <label>考试类型</label>
+                        <div class="option-group" id="examTypeGroup">
+                            <span class="option" data-value="日常练习">日常练习</span>
+                            <span class="option" data-value="单元测试">单元测试</span>
+                            <span class="option active" data-value="期末考试">期末考试</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>难度</label>
+                        <div class="option-group" id="difficultyGroup">
+                            <span class="option" data-value="简单">🌟 简单</span>
+                            <span class="option active" data-value="中等">⭐⭐ 中等</span>
+                            <span class="option" data-value="困难">⭐⭐⭐ 困难</span>
+                        </div>
+                    </div>
+                    <button class="btn" id="genPaperBtn">📄 生成试卷</button>
+                    <div class="result-box" id="paperResult">
+                        <span class="result-title">📄 试卷</span>
+                        <div class="result-content" id="paperContent"></div>
+                        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                            <button class="btn btn-sm no-print" id="exportPdfBtn" style="background:#1a7fc4;width:auto;">📄 导出PDF</button>
+                            <button class="btn btn-sm no-print" id="exportWordBtn" style="background:#2c3e50;width:auto;">📝 导出Word</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 练习 -->
+            <div class="tab-page" id="tabPractice">
+                <div class="card">
+                    <div class="card-title"><i>✏️</i> 练习题</div>
+                    <div class="form-group">
+                        <label>学段</label>
+                        <div class="option-group" id="stageGroupPractice" data-stage-group>
+                            <span class="option" data-value="小学">小学</span>
+                            <span class="option active" data-value="初中">初中</span>
+                            <span class="option" data-value="高中">高中</span>
+                            <span class="option" data-value="大学">大学</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>年级</label>
+                        <select id="gradeSelectPractice" class="grade-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>学科</label>
+                        <select id="practiceSubject" class="subject-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>练习范围（可选）</label>
+                        <input type="text" id="practiceScope" placeholder="如：一元二次方程" />
+                    </div>
+                    <div class="form-group">
+                        <label>题型</label>
+                        <div class="option-group" id="practiceTypeGroup">
+                            <span class="option active" data-value="选择">选择题</span>
+                            <span class="option" data-value="填空">填空题</span>
+                            <span class="option" data-value="判断">判断题</span>
+                            <span class="option" data-value="简答">简答题</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>数量</label>
+                        <div class="option-group" id="countGroup">
+                            <span class="option" data-value="3">3题</span>
+                            <span class="option active" data-value="5">5题</span>
+                            <span class="option" data-value="8">8题</span>
+                            <span class="option" data-value="10">10题</span>
+                        </div>
+                    </div>
+                    <button class="btn" id="genPracticeBtn">🎯 生成练习题</button>
+                    <div class="result-box" id="practiceResult">
+                        <span class="result-title">📋 练习题</span>
+                        <div class="result-content" id="practiceContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 我的 -->
+            <div class="tab-page" id="tabMine">
+                <div class="card">
+                    <div class="card-title"><i>👤</i> 学习统计 & 打卡</div>
+                    <div class="stats-grid">
+                        <div class="stat-item"><div class="num" id="statPlan">0</div><div class="label">生成计划</div></div>
+                        <div class="stat-item"><div class="num" id="statCheckin">0</div><div class="label">已打卡天数</div></div>
+                        <div class="stat-item"><div class="num" id="statPractice">0</div><div class="label">练习题目</div></div>
+                    </div>
+                    <div style="margin-bottom:10px;font-weight:600;">今日打卡状态</div>
+                    <div id="todayCheckin" style="font-size:14px;color:#888;margin-bottom:12px;">尚未打卡</div>
+                    <div style="margin-bottom:10px;font-weight:600;">打卡提醒</div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                        <label for="remindToggle" style="font-size:14px;">开启每晚20:00提醒</label>
+                        <input type="checkbox" id="remindToggle" checked style="width:20px;height:20px;accent-color:var(--primary);" />
+                    </div>
+                    <button class="btn btn-sm" id="checkRemindBtn" style="background:var(--primary);width:auto;padding:8px 20px;">🔔 立即检查打卡状态</button>
+                    <div style="margin-top:12px;font-size:12px;color:#999;">（需浏览器允许通知权限）</div>
+                    <div style="margin-top:16px;font-weight:600;">打卡记录</div>
+                    <div class="history-list" id="checkinList"><div style="color:#aaa;text-align:center;padding:12px;">暂无打卡记录</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i>📕</i> 错题本</div>
+                    <div id="wrongBook"><div style="color:#aaa;text-align:center;padding:12px;">还没有错题，继续加油！</div></div>
+                </div>
+                <button class="btn btn-sm" id="clearDataBtn" style="background:#e74c3c;box-shadow:none;width:auto;padding:8px 24px;">🗑️ 清空数据</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== 底部导航 ===== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-tab="tabPlan"><i>📅</i>计划</button>
+        <button class="nav-item" data-tab="tabDetect"><i>🧠</i>检测</button>
+        <button class="nav-item" data-tab="tabPaper"><i>📝</i>试卷</button>
+        <button class="nav-item" data-tab="tabPractice"><i>✏️</i>练习</button>
+        <button class="nav-item" data-tab="tabMine"><i>👤</i>我的</button>
+    </nav>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== 协议弹窗 ===== -->
+    <div class="modal-overlay" id="protocolModal">
+        <div class="modal-box">
+            <button class="close-modal" id="closeProtocolModal">&times;</button>
+            <h3>📜 用户协议</h3>
+            <div class="protocol-content">
+                <p><strong>欢迎使用 AI 学习助手！</strong></p>
+                <p>1. 本应用旨在帮助用户制定学习计划、进行背诵检测、生成试卷和练习题，所有内容仅供参考。</p>
+                <p>2. 用户需自行提供真实、准确的学习资料，并对其合法性负责。</p>
+                <p>3. 本应用使用 DeepSeek API 生成内容，AI 生成结果不代表官方观点，用户应自行判断其准确性。</p>
+                <p>4. 用户隐私：本应用仅在本地浏览器存储数据，不会上传至任何服务器。</p>
+                <p>5. 使用本应用即代表您同意以上条款。</p>
+                <p style="color:#888;font-size:12px;margin-top:12px;">最后更新：2026年7月</p>
+            </div>
+            <button class="btn-primary" id="agreeProtocolBtn" style="background:var(--primary);">我已阅读并同意</button>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  ⚠️ 请将下面的 API Key 替换为你自己的 DeepSeek API Key
+        // ================================================================
+        const DEEPSEEK_API_KEY = 'sk-787e4b749c934873819a9440f8653dc0';  // <--- 在这里替换
+
+        // ================================================================
+        //  完整应用逻辑（含学段联动、年级/学科动态更新）
+        // ================================================================
+
+        // ---------- 全局状态 ----------
+        let currentUser = null;
+        let knowledgeBase = '';
+        let currentTasks = [];
+        let userData = {
+            stats: { plan: 0, detect: 0, practice: 0, checkin: 0 },
+            history: [],
+            wrongs: [],
+            checkinHistory: []
+        };
+        let remindTimer = null;
+
+        // ---------- DOM 引用 ----------
+        const authPage = document.getElementById('authPage');
+        const mainPage = document.getElementById('mainPage');
+        const appHeader = document.getElementById('appHeader');
+        const bottomNav = document.getElementById('bottomNav');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginError = document.getElementById('loginError');
+        const regError = document.getElementById('regError');
+        const gotoRegister = document.getElementById('gotoRegister');
+        const gotoLogin = document.getElementById('gotoLogin');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const avatarDisplay = document.getElementById('avatarDisplay');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const kbTextarea = document.getElementById('knowledgeBase');
+        const applyKbBtn = document.getElementById('applyKbBtn');
+        const kbStatus = document.getElementById('kbStatus');
+
+        const statPlan = document.getElementById('statPlan');
+        const statCheckin = document.getElementById('statCheckin');
+        const statPractice = document.getElementById('statPractice');
+        const checkinList = document.getElementById('checkinList');
+        const todayCheckin = document.getElementById('todayCheckin');
+        const wrongBook = document.getElementById('wrongBook');
+
+        const planContent = document.getElementById('planContent');
+        const planResult = document.getElementById('planResult');
+        const paperContent = document.getElementById('paperContent');
+        const paperResult = document.getElementById('paperResult');
+
+        const toastContainer = document.getElementById('toastContainer');
+        const remindToggle = document.getElementById('remindToggle');
+
+        // ---------- Toast ----------
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️' };
+            toast.innerHTML = `<span>${icons[type] || '📢'}</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ---------- 数据持久化 ----------
+        function getUserDataKey(username) { return `ai_learning_data_${username}`; }
+
+        function loadUserData(username) {
+            const key = getUserDataKey(username);
+            try {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    if (!parsed.stats) parsed.stats = { plan: 0, detect: 0, practice: 0, checkin: 0 };
+                    if (!parsed.history) parsed.history = [];
+                    if (!parsed.wrongs) parsed.wrongs = [];
+                    if (!parsed.checkinHistory) parsed.checkinHistory = [];
+                    return parsed;
+                }
+            } catch (e) {}
+            return { stats: { plan: 0, detect: 0, practice: 0, checkin: 0 }, history: [], wrongs: [], checkinHistory: [] };
+        }
+
+        function saveUserData(username, data) {
+            localStorage.setItem(getUserDataKey(username), JSON.stringify(data));
+        }
+
+        function loadTasks(username) {
+            try { return JSON.parse(localStorage.getItem(`ai_learning_tasks_${username}`)) || []; } catch (e) { return []; }
+        }
+
+        function saveTasks(username, tasks) {
+            localStorage.setItem(`ai_learning_tasks_${username}`, JSON.stringify(tasks));
+        }
+
+        function loadKnowledgeBase(username) {
+            return localStorage.getItem(`ai_learning_kb_${username}`) || '';
+        }
+
+        function saveKnowledgeBase(username, text) {
+            localStorage.setItem(`ai_learning_kb_${username}`, text);
+        }
+
+        // ---------- 学段联动核心函数 ----------
+        function getGradeOptions(stage) {
+            if (stage === '小学') return ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级'];
+            if (stage === '初中') return ['七年级', '八年级', '九年级'];
+            if (stage === '高中') return ['高一', '高二', '高三'];
+            if (stage === '大学') return ['大一', '大二', '大三', '大四'];
+            return ['七年级', '八年级', '九年级'];
+        }
+
+        function getSubjectOptions(stage) {
+            if (stage === '小学') return ['语文', '数学', '英语', '科学', '道德与法治'];
+            if (stage === '初中') return ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
+            if (stage === '高中') return ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
+            if (stage === '大学') return ['高等数学', '大学英语', '专业基础', '专业核心', '思想政治'];
+            return ['语文', '数学', '英语', '物理', '化学', '生物', '历史', '地理', '政治'];
+        }
+
+        function updateSelectsByStage(stage) {
+            const gradeOptions = getGradeOptions(stage);
+            const subjectOptions = getSubjectOptions(stage);
+            document.querySelectorAll('.grade-select').forEach(sel => {
+                sel.innerHTML = gradeOptions.map(g => `<option value="${g}">${g}</option>`).join('');
+            });
+            document.querySelectorAll('.subject-select').forEach(sel => {
+                sel.innerHTML = subjectOptions.map(s => `<option value="${s}">${s}</option>`).join('');
+            });
+        }
+
+        // ---------- 切换登录/注册 ----------
+        function showAuthPage() {
+            authPage.style.display = 'flex';
+            mainPage.style.display = 'none';
+            appHeader.style.display = 'none';
+            bottomNav.style.display = 'none';
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginError.style.display = 'none';
+            regError.style.display = 'none';
+            clearInterval(remindTimer);
+        }
+
+        function showMainPage(username) {
+            authPage.style.display = 'none';
+            mainPage.style.display = 'block';
+            appHeader.style.display = 'flex';
+            bottomNav.style.display = 'flex';
+            usernameDisplay.textContent = username;
+            avatarDisplay.textContent = username.charAt(0).toUpperCase();
+            currentUser = username;
+
+            // 加载数据
+            userData = loadUserData(username);
+            currentTasks = loadTasks(username);
+            knowledgeBase = loadKnowledgeBase(username);
+            kbTextarea.value = knowledgeBase;
+            if (knowledgeBase) {
+                kbStatus.textContent = '✅ 知识库已加载，共 ' + knowledgeBase.length + ' 字符';
+                kbStatus.classList.add('show');
+            } else {
+                kbStatus.classList.remove('show');
+            }
+
+            // 默认学段：初中，并更新下拉
+            const defaultStage = '初中';
+            document.querySelectorAll('.option-group[data-stage-group]').forEach(group => {
+                const opts = group.querySelectorAll('.option');
+                opts.forEach(opt => opt.classList.remove('active'));
+                const target = group.querySelector('.option[data-value="初中"]');
+                if (target) target.classList.add('active');
+            });
+            updateSelectsByStage('初中');
+
+            updateStatsAndHistory();
+            renderTasks();
+            startRemindTimer();
+        }
+
+        // ---------- 注册/登录 ----------
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const password2 = document.getElementById('regPassword2').value;
+            regError.style.display = 'none';
+            if (!username || username.length < 2) { regError.textContent = '用户名至少2个字符';
+                regError.style.display = 'block'; return; }
+            if (password.length < 6) { regError.textContent = '密码至少6位';
+                regError.style.display = 'block'; return; }
+            if (password !== password2) { regError.textContent = '两次密码不一致';
+                regError.style.display = 'block'; return; }
+            if (localStorage.getItem(getUserDataKey(username))) { regError.textContent = '用户名已存在';
+                regError.style.display = 'block'; return; }
+            const emptyData = { stats: { plan: 0, detect: 0, practice: 0, checkin: 0 }, history: [], wrongs: [],
+                checkinHistory: [] };
+            saveUserData(username, emptyData);
+            saveTasks(username, []);
+            saveKnowledgeBase(username, '');
+            showToast('注册成功！请登录', 'success');
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            document.getElementById('loginUsername').value = username;
+            document.getElementById('loginPassword').value = '';
+            regError.style.display = 'none';
+        });
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            loginError.style.display = 'none';
+            if (!username || !password) { loginError.textContent = '请输入用户名和密码';
+                loginError.style.display = 'block'; return; }
+            if (!localStorage.getItem(getUserDataKey(username))) { loginError.textContent = '用户不存在，请先注册';
+                loginError.style.display = 'block'; return; }
+            showMainPage(username);
+            showToast('欢迎回来，' + username + '！', 'success');
+        });
+
+        gotoRegister.addEventListener('click', e => { e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            loginError.style.display = 'none';
+            regError.style.display = 'none'; });
+        gotoLogin.addEventListener('click', e => { e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            regError.style.display = 'none';
+            loginError.style.display = 'none'; });
+
+        logoutBtn.addEventListener('click', function() {
+            if (confirm('确定要退出吗？')) {
+                saveUserData(currentUser, userData);
+                saveTasks(currentUser, currentTasks);
+                saveKnowledgeBase(currentUser, knowledgeBase);
+                currentUser = null;
+                showAuthPage();
+                showToast('已退出', 'warning');
+            }
+        });
+
+        // ---------- 更新统计和打卡 ----------
+        function updateStatsAndHistory() {
+            if (!currentUser) return;
+            const stats = userData.stats;
+            statPlan.textContent = stats.plan || 0;
+            statCheckin.textContent = stats.checkin || 0;
+            statPractice.textContent = stats.practice || 0;
+            const today = new Date().toISOString().slice(0, 10);
+            const checkinHistory = userData.checkinHistory || [];
+            const todayChecked = checkinHistory.some(d => d === today);
+            todayCheckin.textContent = todayChecked ? '✅ 今日已打卡' : '⏳ 今日未打卡';
+            if (checkinHistory.length === 0) {
+                checkinList.innerHTML = '<div style="color:#aaa;text-align:center;padding:12px;">暂无打卡记录</div>';
+            } else {
+                checkinList.innerHTML = checkinHistory.slice().reverse().map(d =>
+                    `<div class="item"><span>📅 ${d}</span><span class="time">已打卡</span></div>`
+                ).join('');
+            }
+            const wrongs = userData.wrongs || [];
+            if (wrongs.length === 0) {
+                wrongBook.innerHTML = '<div style="color:#aaa;text-align:center;padding:12px;">还没有错题，继续加油！</div>';
+            } else {
+                wrongBook.innerHTML = wrongs.map((item, idx) =>
+                    `<div class="item"><span>${idx + 1}. ${item}</span><button class="btn-sm" style="background:#e74c3c;color:#fff;border:none;padding:2px 12px;border-radius:12px;font-size:12px;cursor:pointer;" data-wrong="${idx}">删除</button></div>`
+                ).join('');
+                wrongBook.querySelectorAll('[data-wrong]').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const idx = parseInt(this.dataset.wrong);
+                        userData.wrongs.splice(idx, 1);
+                        saveUserData(currentUser, userData);
+                        updateStatsAndHistory();
+                        showToast('错题已删除', 'warning');
+                    });
+                });
+            }
+        }
+
+        // ---------- 打卡任务 ----------
+        function renderTasks() {
+            const container = document.getElementById('planContent');
+            if (!container) return;
+            let html = '';
+            if (currentTasks.length === 0) {
+                html = '<div style="color:#888;padding:12px;">暂无计划，请先生成。</div>';
+            } else {
+                html = currentTasks.map((task, idx) => `
+                        <div class="task-item">
+                            <input type="checkbox" id="task_${idx}" ${task.done ? 'checked' : ''} data-idx="${idx}" />
+                            <label for="task_${idx}" class="task-text ${task.done ? 'done' : ''}">${task.text}</label>
+                        </div>
+                    `).join('');
+                html += '<div style="margin-top:12px;"><button class="btn btn-sm" id="saveCheckinBtn" style="background:var(--primary); width:auto;">✅ 打卡今日完成</button></div>';
+            }
+            container.innerHTML = html;
+
+            container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const idx = parseInt(this.dataset.idx);
+                    if (!isNaN(idx) && idx < currentTasks.length) {
+                        currentTasks[idx].done = this.checked;
+                        const label = this.nextElementSibling;
+                        if (label) {
+                            if (this.checked) label.classList.add('done');
+                            else label.classList.remove('done');
+                        }
+                        saveTasks(currentUser, currentTasks);
+                        showToast('任务状态已保存', 'success');
+                    }
+                });
+            });
+
+            const saveBtn = document.getElementById('saveCheckinBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    const allDone = currentTasks.every(t => t.done);
+                    if (!allDone) {
+                        showToast('还有未完成的任务，请全部完成后打卡！', 'warning');
+                        return;
+                    }
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (!userData.checkinHistory.includes(today)) {
+                        userData.checkinHistory.push(today);
+                        userData.stats.checkin = (userData.stats.checkin || 0) + 1;
+                        saveUserData(currentUser, userData);
+                        updateStatsAndHistory();
+                        showToast('🎉 打卡成功！继续加油！', 'success');
+                    } else {
+                        showToast('今日已打卡，明天继续！', 'warning');
+                    }
+                });
+            }
+        }
+
+        // ---------- 辅助函数 ----------
+        function getActiveValue(groupId) {
+            const group = document.getElementById(groupId);
+            const active = group.querySelector('.option.active');
+            return active ? active.dataset.value : null;
+        }
+
+        function getEdition(prefix) {
+            const select = document.getElementById(prefix + 'Edition');
+            const otherInput = document.getElementById(prefix + 'EditionOther');
+            let edition = select.value;
+            if (edition === '其他') {
+                edition = otherInput.value.trim() || '自定义版本';
+            }
+            return edition;
+        }
+
+        // ---------- AI 调用 ----------
+        async function callDeepSeek(prompt, systemPrompt = '你是一个专业的学习助手。') {
+            if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'sk-你的真实APIKey') {
+                throw new Error('请先在代码中设置你的 DeepSeek API Key！');
+            }
+            let finalPrompt = prompt;
+            if (knowledgeBase && !prompt.includes('【忽略知识库】')) {
+                if (prompt.includes('生成') || prompt.includes('检测') || prompt.includes('计划')) {
+                    finalPrompt = `基于以下知识库内容：\n${knowledgeBase}\n\n请根据以上知识库，${prompt}`;
+                }
+            }
+            const response = await fetch('https://api.deepseek.com/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_API_KEY}` },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: finalPrompt }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2500,
+                    stream: false
+                })
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+            }
+            const data = await response.json();
+            if (!data.choices || data.choices.length === 0) throw new Error('API 返回数据异常');
+            return data.choices[0].message.content;
+        }
+
+        // ---------- 工具 ----------
+        function setLoading(btn, loading) {
+            if (loading) {
+                btn._origText = btn.innerHTML;
+                btn.innerHTML = '<span class="loading"></span>生成中...';
+                btn.disabled = true;
+            } else {
+                btn.innerHTML = btn._origText || btn.innerHTML;
+                btn.disabled = false;
+            }
+        }
+
+        function showResult(resultId, content, isError = false) {
+            const box = document.getElementById(resultId);
+            const contentDiv = box.querySelector('.result-content');
+            box.classList.add('show');
+            contentDiv.innerHTML = isError ? `<span class="error-msg">❌ ${content}</span>` : content.replace(/\n/g, '<br>');
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function addHistory(action, detail = '') {
+            userData.history.unshift({ time: new Date().toLocaleString(), action, detail });
+            if (userData.history.length > 50) userData.history.pop();
+            saveUserData(currentUser, userData);
+            updateStatsAndHistory();
+        }
+
+        // ---------- 绑定学段联动事件 ----------
+        document.querySelectorAll('.option-group[data-stage-group]').forEach(group => {
+            group.addEventListener('click', function(e) {
+                const target = e.target.closest('.option');
+                if (!target) return;
+                this.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
+                target.classList.add('active');
+                const stage = target.dataset.value;
+                updateSelectsByStage(stage);
+            });
+        });
+
+        // ---------- 各功能按钮 ----------
+        applyKbBtn.addEventListener('click', function() {
+            const text = kbTextarea.value.trim();
+            if (!text) { showToast('请先粘贴学习资料！', 'warning'); return; }
+            knowledgeBase = text;
+            saveKnowledgeBase(currentUser, text);
+            kbStatus.textContent = `✅ 知识库已加载，共 ${text.length} 字符`;
+            kbStatus.classList.add('show');
+            showToast('知识库应用成功！', 'success');
+        });
+
+        document.getElementById('genPlanBtn').addEventListener('click', async function() {
+            const stage = getActiveValue('stageGroupPlan') || '初中';
+            const grade = document.getElementById('gradeSelectPlan').value;
+            const subject = document.getElementById('planSubject').value;
+            const edition = getEdition('plan');
+            const scope = document.getElementById('planScope').value.trim() || '前三章';
+            const extra = document.getElementById('planExtra').value.trim() || '';
+            const days = parseInt(getActiveValue('daysGroup')) || 7;
+            const intensity = getActiveValue('intensityGroup') || '适中';
+
+            let prompt =
+                `请为一位${stage}阶段${grade}学生制定一个为期${days}天的${subject}学习计划，使用${edition}教科书，学习范围为“${scope}”，强度“${intensity}”。`;
+            if (extra) prompt += ` 额外要求：${extra}。`;
+            prompt += ` 请以每日任务列表的形式输出，每天一个任务，格式为“第X天：具体学习内容”。`;
+
+            setLoading(this, true);
+            try {
+                const reply = await callDeepSeek(prompt);
+                const lines = reply.split('\n').filter(line => line.trim() !== '');
+                const tasks = [];
+                for (let line of lines) {
+                    const match = line.match(/第(\d+)天[:：]\s*(.*)/);
+                    if (match) {
+                        const day = parseInt(match[1]);
+                        const content = match[2].trim();
+                        if (content) tasks.push({ day, text: `第${day}天：${content}`, done: false });
+                    } else {
+                        if (tasks.length > 0) tasks[tasks.length - 1].text += ' ' + line.trim();
+                    }
+                }
+                if (tasks.length === 0) tasks.push({ day: 1, text: reply, done: false });
+                currentTasks = tasks;
+                saveTasks(currentUser, currentTasks);
+                planResult.classList.add('show');
+                renderTasks();
+                userData.stats.plan = (userData.stats.plan || 0) + 1;
+                saveUserData(currentUser, userData);
+                updateStatsAndHistory();
+                addHistory('生成学习计划', `${subject} ${days}天 (${grade} ${scope} ${edition})`);
+                showToast('计划已生成，开始学习吧！', 'success');
+            } catch (e) { showResult('planResult', e.message, true); } finally { setLoading(this, false); }
+        });
+
+        document.getElementById('detectBtn').addEventListener('click', async function() {
+            const stage = getActiveValue('stageGroupDetect') || '初中';
+            const grade = document.getElementById('gradeSelectDetect').value;
+            const scope = document.getElementById('detectScope').value.trim() || '';
+            const extraText = document.getElementById('reciteInput').value.trim() || '';
+            const type = getActiveValue('detectTypeGroup') || 'fill';
+            const typeMap = { 'fill': '填空题', 'choice': '选择题', 'judge': '判断题' };
+            let baseContent = '';
+            if (knowledgeBase) baseContent = `知识库内容：\n${knowledgeBase}\n`;
+            if (extraText) baseContent += `额外内容：\n${extraText}\n`;
+            if (!baseContent) { showToast('请先应用知识库或输入额外内容！', 'warning'); return; }
+            const scopeDesc = scope ? `，范围：${scope}` : '';
+            const prompt =
+                `请根据以下内容生成适合${grade}学生${scopeDesc}的${typeMap[type]}，用于检测背诵效果。内容：${baseContent}。请直接输出题目和答案，格式清晰。`;
+            setLoading(this, true);
+            try {
+                const reply = await callDeepSeek(prompt);
+                showResult('detectResult', reply);
+                userData.stats.detect = (userData.stats.detect || 0) + 1;
+                saveUserData(currentUser, userData);
+                updateStatsAndHistory();
+                addHistory('背诵检测', `${typeMap[type]} (${grade})`);
+            } catch (e) { showResult('detectResult', e.message, true); } finally { setLoading(this, false); }
+        });
+
+        document.getElementById('genPaperBtn').addEventListener('click', async function() {
+            const stage = getActiveValue('stageGroupPaper') || '初中';
+            const grade = document.getElementById('gradeSelectPaper').value;
+            const subject = document.getElementById('paperSubject').value;
+            const edition = getEdition('paper');
+            const scope = document.getElementById('paperScope').value.trim() || '前三章';
+            const examType = getActiveValue('examTypeGroup') || '期末考试';
+            const difficulty = getActiveValue('difficultyGroup') || '中等';
+
+            let styleHint = '';
+            if (stage === '初中') styleHint = '请按照中考题型风格，包括选择题、填空题、解答题，不设判断题。';
+            else if (stage === '高中') styleHint = '请按照高考题型风格，包括选择题、填空题、解答题。';
+            else if (stage === '小学') styleHint = '请按照小学期末考试风格，包括选择题、填空题、简答题。';
+            let examHint = '';
+            if (examType === '日常练习') examHint = '题量适中，侧重巩固。';
+            else if (examType === '单元测试') examHint = '覆盖单元内容，时长约60分钟。';
+            else if (examType === '期末考试') examHint = '覆盖全学期，时长约100分钟。';
+
+            const prompt =
+                `请生成一份${subject}学科的${examType}试卷，针对${grade}学生，使用${edition}教科书，考试范围为“${scope}”，难度${difficulty}。${styleHint} ${examHint} 请附上详细的参考答案和评分标准。试卷格式清晰。`;
+            setLoading(this, true);
+            try {
+                const reply = await callDeepSeek(prompt);
+                paperContent.innerHTML = reply.replace(/\n/g, '<br>');
+                paperResult.classList.add('show');
+                document.getElementById('exportPdfBtn').style.display = 'inline-block';
+                document.getElementById('exportWordBtn').style.display = 'inline-block';
+                addHistory('生成试卷', `${subject} ${examType} (${grade} ${scope} ${edition})`);
+                showToast('试卷已生成，可导出PDF或Word', 'success');
+            } catch (e) { showResult('paperResult', e.message, true); } finally { setLoading(this, false); }
+        });
+
+        document.getElementById('exportPdfBtn').addEventListener('click', function() { window.print(); });
+
+        document.getElementById('exportWordBtn').addEventListener('click', function() {
+            const content = paperContent.innerHTML;
+            const styles =
+                `<style>body{font-family:'宋体',SimSun,serif;font-size:12pt;line-height:1.6;padding:40px;}.paper-title{font-size:18pt;font-weight:bold;text-align:center;margin-bottom:20px;}</style>`;
+            const htmlContent =
+                `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>试卷</title>${styles}</head><body><div class="paper-title">试卷（AI生成）</div>${content}</body></html>`;
+            const blob = new Blob([htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `试卷_${new Date().toISOString().slice(0,10)}.doc`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Word文档已开始下载', 'success');
+        });
+
+        document.getElementById('genPracticeBtn').addEventListener('click', async function() {
+            const stage = getActiveValue('stageGroupPractice') || '初中';
+            const grade = document.getElementById('gradeSelectPractice').value;
+            const subject = document.getElementById('practiceSubject').value;
+            const scope = document.getElementById('practiceScope').value.trim() || '';
+            const type = getActiveValue('practiceTypeGroup') || '选择';
+            const count = parseInt(getActiveValue('countGroup')) || 5;
+            const scopeDesc = scope ? `，范围：${scope}` : '';
+            let prompt = `请生成${count}道适合${grade}学生${scopeDesc}的${subject}${type}题，难度适中，并附上答案。`;
+            setLoading(this, true);
+            try {
+                const reply = await callDeepSeek(prompt);
+                showResult('practiceResult', reply);
+                userData.stats.practice = (userData.stats.practice || 0) + count;
+                saveUserData(currentUser, userData);
+                updateStatsAndHistory();
+                addHistory('生成练习题', `${subject} ${type} ${count}题 (${grade})`);
+            } catch (e) { showResult('practiceResult', e.message, true); } finally { setLoading(this, false); }
+        });
+
+        // ---------- 打卡提醒 ----------
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) return;
+            if (Notification.permission === "granted") return true;
+            if (Notification.permission !== "denied") Notification.requestPermission();
+            return false;
+        }
+
+        function sendNotification(message) {
+            if (!("Notification" in window)) return;
+            if (Notification.permission === "granted") new Notification("📚 AI 学习助手提醒", { body: message });
+        }
+
+        function checkAndRemind() {
+            if (!currentUser) return;
+            const today = new Date().toISOString().slice(0, 10);
+            const checked = userData.checkinHistory.some(d => d === today);
+            if (!checked && remindToggle.checked) {
+                sendNotification('今天的学习任务还没有打卡哦！快去完成吧！');
+                showToast('🔔 已发送提醒通知', 'warning');
+            }
+        }
+
+        function startRemindTimer() {
+            clearInterval(remindTimer);
+            remindTimer = setInterval(() => {
+                const now = new Date();
+                const hour = now.getHours();
+                if (hour >= 20 && hour < 22) checkAndRemind();
+            }, 30 * 60 * 1000);
+            const now = new Date();
+            if (now.getHours() >= 20 && now.getHours() < 22) setTimeout(checkAndRemind, 3000);
+        }
+
+        remindToggle.addEventListener('change', function() {
+            if (this.checked) { requestNotificationPermission();
+                startRemindTimer();
+                showToast('提醒已开启', 'success'); } else { clearInterval(remindTimer);
+                showToast('提醒已关闭', 'warning'); }
+        });
+
+        document.getElementById('checkRemindBtn').addEventListener('click', function() {
+            if (!currentUser) { showToast('请先登录', 'warning'); return; }
+            const today = new Date().toISOString().slice(0, 10);
+            const checked = userData.checkinHistory.some(d => d === today);
+            if (checked) showToast('✅ 今日已完成打卡，继续保持！', 'success');
+            else {
+                showToast('⏳ 今日尚未打卡，请抓紧时间完成任务！', 'warning');
+                if (Notification.permission === "granted") sendNotification('检测到今日未打卡，请尽快完成学习任务！');
+            }
+        });
+
+        // ---------- 清空数据 ----------
+        document.getElementById('clearDataBtn').addEventListener('click', function() {
+            if (!currentUser) return;
+            if (!confirm('确定要清空所有数据吗？')) return;
+            userData = { stats: { plan: 0, detect: 0, practice: 0, checkin: 0 }, history: [], wrongs: [],
+                checkinHistory: [] };
+            currentTasks = [];
+            saveUserData(currentUser, userData);
+            saveTasks(currentUser, currentTasks);
+            updateStatsAndHistory();
+            renderTasks();
+            showToast('数据已清空', 'warning');
+        });
+
+        // ---------- 底部导航 ----------
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // ---------- 初始化 ----------
+        showAuthPage();
+
+        // 协议弹窗
+        document.getElementById('showProtocol')?.addEventListener('click', e => { e.preventDefault();
+            document.getElementById('protocolModal').classList.add('show'); });
+        document.getElementById('closeProtocolModal')?.addEventListener('click', function() { document.getElementById(
+                'protocolModal').classList.remove('show'); });
+        document.getElementById('agreeProtocolBtn')?.addEventListener('click', function() { document.getElementById(
+                'protocolModal').classList.remove('show'); });
+        document.getElementById('protocolModal')?.addEventListener('click', function(e) { if (e.target === this) this
+                .classList.remove('show'); });
+
+        console.log('📚 AI 学习助手已启动，API Key 已内置，学段联动正常。');
+    </script>
+</body>
+</html>
